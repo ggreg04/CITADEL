@@ -72,7 +72,8 @@ void setup() {
   u8g2.setFont(u8g2_font_6x12_tf);
   if (oledFlipped) u8g2.setDisplayRotation(U8G2_R2);
   u8g2.setContrast(prefs.getInt("oled_bright", 255));
-  oledDraw("CITADEL v2.0.0","STARTING...","");
+  drawSplashScreen();
+  delay(7000);
 
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(apName.c_str(), apPass.c_str());
@@ -299,8 +300,6 @@ void setup() {
 
   server.begin();
 
-  // Boot complete
-  oledDraw("CITADEL v2.0.0","AP:"+apName,staConnected?WiFi.localIP().toString():"192.168.4.1");
   addLog("");
   addLog("CITADEL v2.0.0 BOOT OK");
   if (sysBanner!="") addLog(sysBanner);
