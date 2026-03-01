@@ -864,15 +864,6 @@ String runCommand(String raw) {
       return "";
     }
     result="<span class='er'>UNKNOWN OTA COMMAND. Type HELP OTA.</span>"; goto done;
-```
-
-Save the file with **Ctrl+S**.
-
-Then open `06_server.ino` and find this exact line:
-```
-checkGithubOta();
-addLog("");
-  addLog("CITADEL v2.1.0 BOOT OK");
   }
 
   //  HELP 

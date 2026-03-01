@@ -180,3 +180,5 @@ String   healthColor(int h);
 void     stopBle();
 void     startBle();
 String   runCommand(String raw);
+void checkGithubOta();
+void ghSaveToken(const String& token);
