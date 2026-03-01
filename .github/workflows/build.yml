@@ -47,7 +47,10 @@ jobs:
       - name: Rename binary
         run: |
           TAG=${GITHUB_REF#refs/tags/}
-          mv ./build/*.bin ./build/CITADEL_${TAG}.bin
+          echo "Files in build dir:"
+          ls ./build/
+          BIN=$(ls ./build/*.bin | head -1)
+          mv "$BIN" ./build/CITADEL_${TAG}.bin
           echo "BIN_NAME=CITADEL_${TAG}.bin" >> $GITHUB_ENV
           echo "TAG=${TAG}" >> $GITHUB_ENV
 
