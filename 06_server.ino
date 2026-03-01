@@ -300,6 +300,7 @@ void setup() {
 
   server.begin();
 
+  checkGithubOta();
   addLog("");
   addLog("CITADEL v2.0.0 BOOT OK");
   if (sysBanner!="") addLog(sysBanner);

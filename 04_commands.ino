@@ -837,8 +837,42 @@ String runCommand(String raw) {
       ArduinoOTA.setPassword(otaPassword.c_str());
       result="OTA PASSWORD SET."; goto done;
     }
-    if (subUp=="RESTART") { server.send(200,"text/plain","REBOOTING FOR OTA..."); delay(500); ESP.restart(); return ""; }
+   if (subUp=="RESTART") { server.send(200,"text/plain","REBOOTING FOR OTA..."); delay(500); ESP.restart(); return ""; }
+    if (subUp.startsWith("GITHUB TOKEN ")) {
+      String t=parseQuotedArg(sub.substring(13),0);
+      if (t=="") { result="<span class='er'>FORMAT: OTA GITHUB TOKEN \"your_pat\"</span>"; goto done; }
+      ghSaveToken(t);
+      result="<span class='yw'>GH TOKEN SAVED.</span> Length: "+String(t.length())+" chars."; goto done;
+    }
+    if (subUp=="GITHUB TOKEN CLEAR") {
+      prefs.remove("gh_token");
+      result="<span class='yw'>GH TOKEN CLEARED.</span>"; goto done;
+    }
+    if (subUp=="GITHUB STATUS") {
+      String tok=prefs.getString("gh_token","");
+      result="<span class='cy'> GITHUB OTA </span><br>"
+             "TOKEN:   "+(tok==""?"<span class='er'>NOT SET</span>":"<span class='yw'>SET ("+String(tok.length())+" chars)</span>")+"<br>"
+             "CURRENT: "+String(CURRENT_VER)+"<br>"
+             "REPO:    ggreg04/CITADEL<br>"
+             "STA:     "+(staConnected?WiFi.localIP().toString():"<span class='er'>NOT CONNECTED</span>");
+      goto done;
+    }
+    if (subUp=="GITHUB CHECK") {
+      if (!staConnected) { result="<span class='er'>STA not connected.</span>"; goto done; }
+      server.send(200,"text/html","<span class='yw'>Checking GitHub...</span>");
+      checkGithubOta();
+      return "";
+    }
     result="<span class='er'>UNKNOWN OTA COMMAND. Type HELP OTA.</span>"; goto done;
+```
+
+Save the file with **Ctrl+S**.
+
+Then open `06_server.ino` and find this exact line:
+```
+checkGithubOta();
+addLog("");
+  addLog("CITADEL v2.1.0 BOOT OK");
   }
 
   //  HELP 
