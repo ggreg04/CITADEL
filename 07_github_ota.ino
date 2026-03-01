@@ -93,7 +93,7 @@ static bool isNewer(const String& remote, const String& current) {
 String ghGetLatestTag() {
 
   WiFiClientSecure client;
-  client.setInsecure();
+  client.setTrustAnchors(nullptr); // disables SSL certificate checking
   client.setTimeout(15);
 
   HTTPClient http;
@@ -136,7 +136,7 @@ String ghGetLatestTag() {
 String ghGetBinUrl() {
 
   WiFiClientSecure client;
-  client.setInsecure();
+  client.setTrustAnchors(nullptr); // disables SSL certificate checking
   client.setTimeout(20);
 
   HTTPClient http;
@@ -183,7 +183,7 @@ bool ghFlashBin(const String& binUrl) {
   }
 
   WiFiClientSecure client;
-  client.setInsecure();
+  client.setTrustAnchors(nullptr); // disables SSL certificate checking
   client.setTimeout(20);
 
   HTTPClient http;
