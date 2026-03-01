@@ -65,7 +65,7 @@ String token = ghLoadToken();
   
   WiFiClientSecure client;
   client.setInsecure();
-  client.setTimeout(15);
+  client.setHandshakeTimeout(30);
   HTTPClient http;
   String urString token = ghLoadToken();l = "https://api.github.com/repos/";
   url += GH_OWNER; url += "/"; url += GH_REPO;
@@ -90,7 +90,7 @@ String ghGetBinUrl() {
   String token = ghLoadToken();
   WiFiClientSecure client;
   client.setInsecure();
-  client.setTimeout(15);
+  client.setHandshakeTimeout(30);
   HTTPClient http;
   String url = "https://api.github.com/repos/";
   url += GH_OWNER; url += "/"; url += GH_REPO;
@@ -116,8 +116,11 @@ bool ghFlashBin(const String& binUrl) {
   String token = ghLoadToken();
   WiFiClientSecure client;
   client.setInsecure();
-  client.setTimeout(15);
+  client.setHandshakeTimeout(30);
   HTTPClient http;
+  http.setConnectTimeout(15000);
+  http.setTimeout(15000);
+  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
   http.begin(client, binUrl);
   if (token.length() > 0) {
   if (token.length() > 0) {
