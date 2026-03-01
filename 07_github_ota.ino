@@ -60,23 +60,21 @@ static bool isNewer(const String& remote, const String& current) {
 }
 
 String ghGetLatestTag() {
-  String token = ghLoadToken();
-  if (token == "") {
-    addLog("[GH-OTA] No token. Run: OTA GITHUB TOKEN \"pat\"");
-    return "";
-  }
+  
+String token = ghLoadToken();
+  
   WiFiClientSecure client;
   client.setInsecure();
   client.setHandshakeTimeout(30);
   HTTPClient http;
-  http.setConnectTimeout(15000);
-  http.setTimeout(15000);
-  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  String path = "/repos/";
-  path += GH_OWNER; path += "/"; path += GH_REPO;
-  path += "/releases/latest";
-  http.begin(client, "api.github.com", 443, path, true);
+  String urString token = ghLoadToken();l = "https://api.github.com/repos/";
+  url += GH_OWNER; url += "/"; url += GH_REPO;
+  url += "/releases/latest";
+  http.begin(client, url);
+  String token = ghLoadToken();
+if (token.length() > 0) {
   http.addHeader("Authorization", "Bearer " + token);
+}
   http.addHeader("User-Agent", "CITADEL-ESP32");
   http.addHeader("Accept", "application/vnd.github+json");
   int code = http.GET();
@@ -84,26 +82,23 @@ String ghGetLatestTag() {
     addLog("[GH-OTA] API error: " + String(code));
     http.end(); return "";
   }
-  String body = http.getString().substring(0, 2048);
-  http.end();
+String body = http.getString();  http.end();
   return jsonExtract(body, "tag_name");
 }
 
 String ghGetBinUrl() {
   String token = ghLoadToken();
-  if (token == "") return "";
   WiFiClientSecure client;
   client.setInsecure();
   client.setHandshakeTimeout(30);
   HTTPClient http;
-  http.setConnectTimeout(15000);
-  http.setTimeout(15000);
-  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  String path = "/repos/";
-  path += GH_OWNER; path += "/"; path += GH_REPO;
-  path += "/releases/latest";
-  http.begin(client, "api.github.com", 443, path, true);
+  String url = "https://api.github.com/repos/";
+  url += GH_OWNER; url += "/"; url += GH_REPO;
+  url += "/releases/latest";
+  http.begin(client, url);
+  if (token.length() > 0) {
   http.addHeader("Authorization", "Bearer " + token);
+}
   http.addHeader("User-Agent", "CITADEL-ESP32");
   http.addHeader("Accept", "application/vnd.github+json");
   int code = http.GET();
@@ -127,9 +122,11 @@ bool ghFlashBin(const String& binUrl) {
   http.setTimeout(15000);
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
   http.begin(client, binUrl);
+  if (token.length() > 0) {
+  if (token.length() > 0) {
+  if (token.length() > 0) {
   http.addHeader("Authorization", "Bearer " + token);
-  http.addHeader("User-Agent", "CITADEL-ESP32");
-  http.addHeader("Accept", "application/octet-stream");
+}
   int code = http.GET();
   if (code != 200) {
     addLog("[GH-OTA] Download error: " + String(code));
@@ -177,11 +174,11 @@ bool ghFlashBin(const String& binUrl) {
 void checkGithubOta() {
   if (!staConnected) return;
   if (ghLoadToken() == "") return;
-  ip_addr_t dnsAddr;
+  /*ip_addr_t dnsAddr;
 IP4_ADDR(&dnsAddr.u_addr.ip4, 8, 8, 8, 8);
 dnsAddr.type = IPADDR_TYPE_V4;
 dns_setserver(0, &dnsAddr);
-delay(100);
+delay(100);*/
   addLog("[GH-OTA] Checking for update...");
   oledDraw("GH-OTA","CHECKING...","");
   String latestTag = ghGetLatestTag();
