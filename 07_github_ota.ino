@@ -61,9 +61,7 @@ static bool isNewer(const String& remote, const String& current) {
 }
 
 String ghGetLatestTag() {
-  WiFiClientSecure client;
-  client.setTrustAnchors(nullptr); // ArduinoDroid-compatible way to bypass SSL
-
+  WiFiClient client;  // Plain client, no SSL verification
   HTTPClient http;
   String url = "https://api.github.com/repos/";
   url += GH_OWNER;
@@ -93,8 +91,7 @@ String ghGetLatestTag() {
 
 String ghGetBinUrl() {
   String token = ghLoadToken();
-  WiFiClientSecure client;
-  client.setTrustAnchors(nullptr);
+  WiFiClient client;  // Plain client, no SSL verification
 
   HTTPClient http;
   String url = "https://api.github.com/repos/";
@@ -128,8 +125,7 @@ bool ghFlashBin(const String& binUrl) {
   }
 
   String token = ghLoadToken();
-  WiFiClientSecure client;
-  client.setTrustAnchors(nullptr);
+  WiFiClient client;  // Plain client, no SSL verification
 
   HTTPClient http;
   http.begin(client, binUrl);
