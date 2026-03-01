@@ -167,6 +167,8 @@ bool ghFlashBin(const String& binUrl) {
 void checkGithubOta() {
   if (!staConnected) return;
   if (ghLoadToken() == "") return;
+  WiFi.setDNS(IPAddress(8,8,8,8));
+delay(100);
   addLog("[GH-OTA] Checking for update...");
   oledDraw("GH-OTA","CHECKING...","");
   String latestTag = ghGetLatestTag();
