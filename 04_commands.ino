@@ -852,7 +852,7 @@ String runCommand(String raw) {
       String tok=prefs.getString("gh_token","");
       result="<span class='cy'> GITHUB OTA </span><br>"
              "TOKEN:   "+(tok==""?"<span class='er'>NOT SET</span>":"<span class='yw'>SET ("+String(tok.length())+" chars)</span>")+"<br>"
-             "CURRENT: "+String(CURRENT_VER)+"<br>"
+             "CURRENT: v2.1.0<br>"
              "REPO:    ggreg04/CITADEL<br>"
              "STA:     "+(staConnected?WiFi.localIP().toString():"<span class='er'>NOT CONNECTED</span>");
       goto done;
