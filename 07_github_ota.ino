@@ -145,7 +145,6 @@ bool ghFlashBin(const String& binUrl) {
   http.addHeader("Authorization", "Bearer " + token);
   http.addHeader("User-Agent", "CITADEL-ESP32");
   http.addHeader("Accept", "application/octet-stream");
-  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
   int code = http.GET();
   if (code != 200) {
     addLog("[GH-OTA] Download error: " + String(code));
