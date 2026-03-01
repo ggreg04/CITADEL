@@ -1,9 +1,10 @@
 // ==========================================================
-//   CITADEL v2.1.0 — CIT_V_2_1_0
+//   CITADEL v2.1.0 — CIT_V_2_1_20
 //   File: 07_github_ota.ino
 //   GitHub OTA — boot version check, fetch, self-flash
 // ==========================================================
 
+#include "lwip/dns.h"
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
@@ -167,7 +168,10 @@ bool ghFlashBin(const String& binUrl) {
 void checkGithubOta() {
   if (!staConnected) return;
   if (ghLoadToken() == "") return;
-  WiFi.setDNS(IPAddress(8,8,8,8));
+  ip_addr_t dnsAddr;
+IP4_ADDR(&dnsAddr.u_addr.ip4, 8, 8, 8, 8);
+dnsAddr.type = IPADDR_TYPE_V4;
+dns_setserver(0, &dnsAddr);
 delay(100);
   addLog("[GH-OTA] Checking for update...");
   oledDraw("GH-OTA","CHECKING...","");
