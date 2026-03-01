@@ -32,12 +32,17 @@ jobs:
             -o BleKeyboard.zip
           arduino-cli lib install --zip-path BleKeyboard.zip
 
+      - name: Prepare sketch folder
+        run: |
+          mkdir -p sketch/CIT_V_2_0_0
+          cp *.ino sketch/CIT_V_2_0_0/
+
       - name: Compile sketch
         run: |
           arduino-cli compile \
             --fqbn esp32:esp32:esp32 \
             --output-dir ./build \
-            ./CIT_V_2_0_0.ino
+            ./sketch/CIT_V_2_0_0
 
       - name: Rename binary
         run: |
