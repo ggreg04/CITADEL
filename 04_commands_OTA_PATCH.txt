@@ -1,0 +1,34 @@
+INSTRUCTIONS:
+In 04_commands.ino, find this line:
+
+    result="<span class='er'>UNKNOWN OTA COMMAND. Type HELP OTA.</span>"; goto done;
+
+Replace it with this block:
+
+    if (subUp.startsWith("GITHUB TOKEN ")) {
+      String t=parseQuotedArg(sub.substring(13),0);
+      if (t=="") { result="<span class='er'>FORMAT: OTA GITHUB TOKEN \"your_pat\"</span>"; goto done; }
+      ghSaveToken(t);
+      result="<span class='yw'>GH TOKEN SAVED.</span> Length: "+String(t.length())+" chars."; goto done;
+    }
+    if (subUp=="GITHUB CHECK") {
+      if (!staConnected) { result="<span class='er'>STA not connected.</span>"; goto done; }
+      result="<span class='yw'>Checking GitHub...</span>";
+      server.send(200,"text/html",result);
+      checkGithubOta();
+      return "";
+    }
+    if (subUp=="GITHUB STATUS") {
+      String tok=ghLoadToken();
+      result="<span class='cy'> GITHUB OTA </span><br>"
+             "TOKEN:   "+(tok==""?"<span class='er'>NOT SET</span>":"<span class='yw'>SET ("+String(tok.length())+" chars)</span>")+"<br>"
+             "CURRENT: "+String(CURRENT_VER)+"<br>"
+             "REPO:    ggreg04/CITADEL<br>"
+             "STA:     "+(staConnected?WiFi.localIP().toString():"<span class='er'>NOT CONNECTED</span>");
+      goto done;
+    }
+    if (subUp=="GITHUB TOKEN CLEAR") {
+      prefs.remove(GH_TOKEN_KEY);
+      result="<span class='yw'>GH TOKEN CLEARED.</span>"; goto done;
+    }
+    result="<span class='er'>UNKNOWN OTA COMMAND. Type HELP OTA.</span>"; goto done;

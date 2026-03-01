@@ -1,0 +1,60 @@
+name: Build and Release CITADEL
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Install ESP32 board package
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls \
+            https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      - name: Install libraries
+        run: |
+          arduino-cli lib install "U8g2"
+          curl -L https://github.com/T-vK/ESP32-BLE-Keyboard/archive/refs/heads/master.zip \
+            -o BleKeyboard.zip
+          arduino-cli lib install --zip-path BleKeyboard.zip
+
+      - name: Compile sketch
+        run: |
+          arduino-cli compile \
+            --fqbn esp32:esp32:esp32 \
+            --output-dir ./build \
+            ./CIT_V_2_0_0.ino
+
+      - name: Rename binary
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          mv ./build/*.bin ./build/CITADEL_${TAG}.bin
+          echo "BIN_NAME=CITADEL_${TAG}.bin" >> $GITHUB_ENV
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: CITADEL ${{ env.TAG }}
+          body: |
+            Automated build from tag ${{ env.TAG }}.
+            Flash via CITADEL terminal: OTA GITHUB CHECK
+          files: ./build/${{ env.BIN_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
