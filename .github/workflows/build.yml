@@ -40,7 +40,7 @@ jobs:
       - name: Compile sketch
         run: |
           arduino-cli compile \
-            --fqbn esp32:esp32:esp32 \
+            --fqbn esp32:esp32:esp32:PartitionScheme=huge_app \
             --output-dir ./build \
             ./sketch/CIT_V_2_0_0
 
