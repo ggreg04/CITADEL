@@ -90,7 +90,7 @@ String ghGetLatestTag() {
     return "";
   }
   WiFiClientSecure client;
-  client.setCACert(GH_ROOT_CA);
+  client.setInsecure();
   client.setTimeout(10);
   HTTPClient http;
   String url = "https://api.github.com/repos/";
@@ -114,7 +114,7 @@ String ghGetBinUrl() {
   String token = ghLoadToken();
   if (token == "") return "";
   WiFiClientSecure client;
-  client.setCACert(GH_ROOT_CA);
+  client.setInsecure();
   client.setTimeout(10);
   HTTPClient http;
   String url = "https://api.github.com/repos/";
@@ -138,7 +138,7 @@ bool ghFlashBin(const String& binUrl) {
   }
   String token = ghLoadToken();
   WiFiClientSecure client;
-  client.setCACert(GH_ROOT_CA);
+  client.setInsecure();
   client.setTimeout(30);
   HTTPClient http;
   http.begin(client, binUrl);
