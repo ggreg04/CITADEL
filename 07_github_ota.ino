@@ -61,7 +61,8 @@ static bool isNewer(const String& remote, const String& current) {
 }
 
 String ghGetLatestTag() {
-  WiFiClient client;  // Plain client, no SSL verification
+  WiFiClientSecure client;
+  client.setInsecure();  // Skip SSL verification to avoid hanging
   HTTPClient http;
   String url = "https://api.github.com/repos/";
   url += GH_OWNER;
@@ -69,6 +70,7 @@ String ghGetLatestTag() {
   url += GH_REPO;
   url += "/releases/latest";
   http.begin(client, url);
+  http.setTimeout(5000);  // 5 second timeout
 
   String token = ghLoadToken();
   if (token.length() > 0) {
@@ -91,7 +93,8 @@ String ghGetLatestTag() {
 
 String ghGetBinUrl() {
   String token = ghLoadToken();
-  WiFiClient client;  // Plain client, no SSL verification
+  WiFiClientSecure client;
+  client.setInsecure();  // Skip SSL verification to avoid hanging
 
   HTTPClient http;
   String url = "https://api.github.com/repos/";
@@ -100,6 +103,7 @@ String ghGetBinUrl() {
   url += GH_REPO;
   url += "/releases/latest";
   http.begin(client, url);
+  http.setTimeout(5000);  // 5 second timeout
 
   if (token.length() > 0) {
     http.addHeader("Authorization", "Bearer " + token);
@@ -125,10 +129,12 @@ bool ghFlashBin(const String& binUrl) {
   }
 
   String token = ghLoadToken();
-  WiFiClient client;  // Plain client, no SSL verification
+  WiFiClientSecure client;
+  client.setInsecure();  // Skip SSL verification to avoid hanging
 
   HTTPClient http;
   http.begin(client, binUrl);
+  http.setTimeout(15000);  // 15 second timeout for download
 
   if (token.length() > 0) {
     http.addHeader("Authorization", "Bearer " + token);
@@ -189,12 +195,20 @@ bool ghFlashBin(const String& binUrl) {
 void checkGithubOta() {
   if (!staConnected) return;
 
+  unsigned long otaStartTime = millis();
+  const unsigned long OTA_TIMEOUT = 15000;  // 15 second total timeout
+
   addLog("[GH-OTA] Checking for update...");
   oledDraw("GH-OTA","CHECKING...","");
 
   String latestTag = ghGetLatestTag();
   if (latestTag == "") {
     addLog("[GH-OTA] Could not reach GitHub.");
+    return;
+  }
+
+  if (millis() - otaStartTime > OTA_TIMEOUT) {
+    addLog("[GH-OTA] Check timeout, skipping.");
     return;
   }
 
