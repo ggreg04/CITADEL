@@ -11,7 +11,7 @@
 
 static const char* GH_OWNER    = "ggreg04";
 static const char* GH_REPO     = "CITADEL";
-static const char* CURRENT_VER = "v2.1.0";
+static const char* CURRENT_VER = "v2.1.1";
 static const char* GH_TOKEN_KEY = "gh_token";
 
 static String ghLoadToken() {

@@ -1,5 +1,5 @@
 // ==========================================================
-//   CITADEL v2.1.0 — CIT_V_2_1_0
+//   CITADEL v2.1.1 — CIT_V_2_1_1
 //   Multi-file restructure — identical functionality
 //   2025-02-28 00:00 UTC
 //   Checksum: CLDTX6
