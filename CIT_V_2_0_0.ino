@@ -1,8 +1,8 @@
 // ==========================================================
-//   CITADEL v2.2.3 — CIT_V_2_2_3
-//   Multi-file restructure — identical functionality
-//   2025-02-28 00:00 UTC
-//   Checksum: CLDTX6
+//   CITADEL v2.2.4 — CIT_V_2_2_4
+//   Bootloop fix — include ordering
+//   2026-03-02 00:00 UTC
+//   Checksum: CLDTX7
 //   File 00: Master .ino — Includes, Types, Globals, Forward Declarations
 // ==========================================================
 

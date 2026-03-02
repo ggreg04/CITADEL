@@ -301,7 +301,7 @@ void setup() {
   server.begin();
 
   addLog("");
-  addLog("CITADEL v2.2.3 BOOT OK");
+  addLog("CITADEL v2.2.4 BOOT OK");
   if (sysBanner!="") addLog(sysBanner);
   addLog("AP:  "+WiFi.softAPIP().toString());
   if (staConnected) addLog("STA: "+WiFi.localIP().toString());

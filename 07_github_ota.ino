@@ -1,12 +1,12 @@
 // ==========================================================
-//   CITADEL v2.1.0 — CIT_V_2_1_22
+//   CITADEL v2.2.4 — CIT_V_2_2_4
 //   File: 07_github_ota.ino
 //   GitHub OTA — boot version check, fetch, self-flash
 // ==========================================================
 
 static const char* GH_OWNER    = "ggreg04";
 static const char* GH_REPO     = "CITADEL";
-static const char* CURRENT_VER = "v2.2.3";
+static const char* CURRENT_VER = "v2.2.4";
 static const char* GH_TOKEN_KEY = "gh_token";
 
 static String ghLoadToken() {
