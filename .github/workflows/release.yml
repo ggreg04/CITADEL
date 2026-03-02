@@ -1,0 +1,124 @@
+name: 🚀 CITADEL Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. v2.1.1)'
+        required: true
+        type: string
+      release_notes:
+        description: 'Release notes (what changed, what was fixed)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate version format
+        run: |
+          if ! echo "${{ github.event.inputs.version }}" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "❌ Invalid version format. Must be vX.X.X (e.g. v2.1.1)"
+            exit 1
+          fi
+          echo "✅ Version format valid: ${{ github.event.inputs.version }}"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install ESP32 board package
+        run: |
+          arduino-cli config init
+          arduino-cli config set library.enable_unsafe_install true
+          arduino-cli config add board_manager.additional_urls \
+            https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32@2.0.17
+
+      - name: Install libraries
+        run: |
+          arduino-cli lib install "U8g2"
+          curl -L https://github.com/T-vK/ESP32-BLE-Keyboard/archive/refs/heads/master.zip \
+            -o BleKeyboard.zip
+          arduino-cli lib install --zip-path BleKeyboard.zip
+
+      - name: Prepare sketch folder
+        run: |
+          mkdir -p sketch/CIT_V_2_0_0
+          cp *.ino sketch/CIT_V_2_0_0/
+
+      - name: Compile sketch
+        run: |
+          arduino-cli compile \
+            --fqbn esp32:esp32:esp32:PartitionScheme=huge_app \
+            --output-dir ./build \
+            ./sketch/CIT_V_2_0_0
+
+      - name: Package release artifacts
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          BIN=$(ls ./build/*.bin | head -1)
+          mv "$BIN" "./build/CITADEL_${VERSION}.bin"
+
+          # Bundle .ino source files + binary into a zip
+          ZIP_NAME="CITADEL_${VERSION}.zip"
+          mkdir -p release_pkg
+          cp *.ino release_pkg/
+          cp "./build/CITADEL_${VERSION}.bin" release_pkg/
+          cat > release_pkg/INSTALL.md << EOF
+          # CITADEL ${VERSION} — Install Instructions
+
+          ## OTA (recommended)
+          Flash your current device, then run from the CITADEL terminal:
+          \`\`\`
+          OTA GITHUB CHECK
+          \`\`\`
+          The device will detect this release and self-flash.
+
+          ## Manual flash via esptool
+          \`\`\`
+          esptool.py --chip esp32 --baud 921600 write_flash 0x10000 CITADEL_${VERSION}.bin
+          \`\`\`
+          EOF
+          cd release_pkg && zip -r "../${ZIP_NAME}" . && cd ..
+
+          echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
+          echo "BIN_NAME=CITADEL_${VERSION}.bin" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Create git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "${{ github.event.inputs.version }}"
+          git push origin "${{ github.event.inputs.version }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: CITADEL ${{ env.VERSION }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+          body: |
+            ${{ github.event.inputs.release_notes }}
+
+            ---
+            ## Install
+            Flash via CITADEL terminal: `OTA GITHUB CHECK`
+            Or manually flash `CITADEL_${{ env.VERSION }}.bin` with esptool.
+
+            See `INSTALL.md` inside the zip for full instructions.
+          files: |
+            ${{ env.ZIP_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
