@@ -120,5 +120,6 @@ jobs:
             See `INSTALL.md` inside the zip for full instructions.
           files: |
             ${{ env.ZIP_NAME }}
+            build/${{ env.BIN_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
