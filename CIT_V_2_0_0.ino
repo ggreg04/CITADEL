@@ -89,6 +89,7 @@ bool          thermalThrottled = false;
 bool          emergencyKill    = false;
 bool          oledFlipped      = false;
 unsigned long bootTime         = 0;
+bool          ghOtaChecked     = false;
 unsigned long lastThermalCheck = 0;
 unsigned long lastHealthCheck  = 0;
 unsigned long lastWifiCheck    = 0;
