@@ -20,6 +20,8 @@ enum HealthState { HEALTH_GREEN, HEALTH_YELLOW, HEALTH_ORANGE, HEALTH_RED };
 #include <esp_wifi.h>
 #include <esp_wifi_types.h>
 #include <Update.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <time.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"

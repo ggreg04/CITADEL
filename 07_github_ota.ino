@@ -4,11 +4,6 @@
 //   GitHub OTA — boot version check, fetch, self-flash
 // ==========================================================
 
-#include "lwip/dns.h"
-#include <HTTPClient.h>
-#include <WiFiClientSecure.h>
-#include <Update.h>
-
 static const char* GH_OWNER    = "ggreg04";
 static const char* GH_REPO     = "CITADEL";
 static const char* CURRENT_VER = "v2.2.3";
