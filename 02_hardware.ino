@@ -182,7 +182,7 @@ void updateOled() {
       String l3 = (sl.num == 0)
         ? ("A:" + apName + " " + WiFi.softAPIP().toString())
         : ("AP: " + String(sl.num) + " dev connected");
-      oledDraw("CITADEL v2.1.0", l2.substring(0,21), l3.substring(0,21));
+      oledDraw("CITADEL v2.2.7", l2.substring(0,21), l3.substring(0,21));
       break;
     }
     case OLED_TERMINAL:

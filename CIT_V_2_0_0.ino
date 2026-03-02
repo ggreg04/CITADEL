@@ -1,8 +1,8 @@
 // ==========================================================
-//   CITADEL v2.2.3 — CIT_V_2_2_3
-//   Multi-file restructure — identical functionality
-//   2025-02-28 00:00 UTC
-//   Checksum: CLDTX6
+//   CITADEL v2.2.7 — CIT_V_2_2_7
+//   Bootloop fix — include ordering
+//   2026-03-02 00:00 UTC
+//   Checksum: CLDTX8
 //   File 00: Master .ino — Includes, Types, Globals, Forward Declarations
 // ==========================================================
 
@@ -20,6 +20,8 @@ enum HealthState { HEALTH_GREEN, HEALTH_YELLOW, HEALTH_ORANGE, HEALTH_RED };
 #include <esp_wifi.h>
 #include <esp_wifi_types.h>
 #include <Update.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <time.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
