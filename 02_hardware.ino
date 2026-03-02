@@ -150,7 +150,7 @@ void drawSplashScreen() {
   u8g2.setFont(u8g2_font_6x12_tf);
   u8g2.drawXBM(0, 0, 128, 28, skyline_bmp);
   u8g2.drawStr(34, 40, "Welcome to");
-  u8g2.drawStr(22, 54, "CITADEL v2.1.0");
+  u8g2.drawStr(22, 54, "CITADEL v2.2.3");
   u8g2.sendBuffer();
 }
 

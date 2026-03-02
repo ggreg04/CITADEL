@@ -301,7 +301,7 @@ void setup() {
   server.begin();
 
   addLog("");
-  addLog("CITADEL v2.1.0 BOOT OK");
+  addLog("CITADEL v2.2.3 BOOT OK");
   if (sysBanner!="") addLog(sysBanner);
   addLog("AP:  "+WiFi.softAPIP().toString());
   if (staConnected) addLog("STA: "+WiFi.localIP().toString());
@@ -365,7 +365,7 @@ void loop() {
 // 
 //   CITADEL  BUILD RECORD                                                 
 // 
-//   Version  : 2.1.0                                                       
+//   Version  : 2.2.3                                                       
 //   Checksum : CLDTX6                                                      
 // 
 //   v2.0.0 PATCH NOTES                                                     
