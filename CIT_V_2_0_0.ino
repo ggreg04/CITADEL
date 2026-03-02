@@ -1,8 +1,8 @@
 // ==========================================================
-//   CITADEL v2.2.4 — CIT_V_2_2_4
+//   CITADEL v2.2.7 — CIT_V_2_2_7
 //   Bootloop fix — include ordering
 //   2026-03-02 00:00 UTC
-//   Checksum: CLDTX7
+//   Checksum: CLDTX8
 //   File 00: Master .ino — Includes, Types, Globals, Forward Declarations
 // ==========================================================
 
