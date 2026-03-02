@@ -302,7 +302,7 @@ void setup() {
 
   checkGithubOta();
   addLog("");
-  addLog("CITADEL v2.0.0 BOOT OK");
+  addLog("CITADEL v2.1.0 BOOT OK");
   if (sysBanner!="") addLog(sysBanner);
   addLog("AP:  "+WiFi.softAPIP().toString());
   if (staConnected) addLog("STA: "+WiFi.localIP().toString());
