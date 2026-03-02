@@ -172,7 +172,7 @@ void setup() {
   server.on("/status",HTTP_GET,[](){
     if (authEnabled && !isAuthenticated()) { server.send(403,"application/json","{}"); return; }
     const char* modes[]={"STATUS","TERMINAL","TERM_ALERTS","CLOCK","MSG","SCROLL","HEALTH","ATTACK","NETWORK","OFF"};
-    bool btPaired=btActive&&bleKbd&&bleKbd->isConnected();
+    bool btPaired=btActive&&bleIsConnected();
     bool sessExpired=authEnabled&&sessionToken==""||
                      (authTimeout>0&&!authAutoRenew&&millis()-sessionStart>(unsigned long)authTimeout*60000UL);
     String json="{";
@@ -338,15 +338,15 @@ void loop() {
   }
 
   // BT connection state tracking
-  if (btActive && bleKbd) {
-    bool paired=bleKbd->isConnected();
+  if (btActive) {
+    bool paired=bleIsConnected();
     if (paired && !btWasConnected) { btWasConnected=true; addLog("[BT] Device paired."); }
     else if (!paired && btWasConnected) { btWasConnected=false; addLog("[BT] Device unpaired."); }
   }
 
   // BLE keep-alive
-  if (btActive && bleKbd && bleKbd->isConnected() && millis()-lastKeepAlive>20000) {
-    bleKbd->press(KEY_LEFT_SHIFT); delay(1); bleKbd->releaseAll();
+  if (btActive && bleIsConnected() && millis()-lastKeepAlive>20000) {
+    blePress(KEY_LEFT_SHIFT); delay(1); bleReleaseAll();
     lastKeepAlive=millis();
   }
 
