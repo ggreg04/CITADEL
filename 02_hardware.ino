@@ -470,18 +470,17 @@ void startBle() {
   nimServer = NimBLEDevice::createServer();
   nimServer->setCallbacks(&_kbdCb, false);
   nimHid      = new NimBLEHIDDevice(nimServer);
-  nimInput    = nimHid->inputReport(1);
-  nimConsumer = nimHid->inputReport(2);
-  nimHid->manufacturer()->setValue("CITADEL");
-  nimHid->pnp(0x02, 0x05AC, 0x820A, 0x0210);
-  nimHid->hidInfo(0x00, 0x01);
-  nimHid->reportMap((uint8_t*)_hidDesc, sizeof(_hidDesc));
+  nimInput    = nimHid->getInputReport(1);
+  nimConsumer = nimHid->getInputReport(2);
+  nimHid->setManufacturer("CITADEL");
+  nimHid->setPnp(0x02, 0x05AC, 0x820A, 0x0210);
+  nimHid->setHidInfo(0x00, 0x01);
+  nimHid->setReportMap((uint8_t*)_hidDesc, sizeof(_hidDesc));
   nimHid->startServices();
   nimHid->setBatteryLevel(100);
   NimBLEAdvertising* adv = NimBLEDevice::getAdvertising();
   adv->setAppearance(0x03C1);  // HID keyboard
-  adv->addServiceUUID(nimHid->hidService()->getUUID());
-  adv->setScanResponse(false);
+  adv->addServiceUUID(nimHid->getHidService()->getUUID());
   NimBLEDevice::startAdvertising();
   btActive = true;
   addLog("[BT] NimBLE started as \"" + btName + "\" Heap:" + String(ESP.getFreeHeap()/1024) + "KB");
