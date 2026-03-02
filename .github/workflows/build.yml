@@ -28,9 +28,7 @@ jobs:
       - name: Install libraries
         run: |
           arduino-cli lib install "U8g2"
-          curl -L https://github.com/T-vK/ESP32-BLE-Keyboard/archive/refs/heads/master.zip \
-            -o BleKeyboard.zip
-          arduino-cli lib install --zip-path BleKeyboard.zip
+          arduino-cli lib install "NimBLE-Arduino"
 
       - name: Prepare sketch folder
         run: |
