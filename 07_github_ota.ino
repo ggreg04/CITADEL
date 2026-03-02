@@ -168,6 +168,7 @@ bool ghFlashBin(const String& binUrl) {
   WiFiClient* stream = http.getStreamPtr();
   static uint8_t buf[512];
   size_t written = 0;
+  unsigned long lastData = millis();
 
   while (http.connected() && written < (size_t)contentLen) {
     size_t avail = stream->available();
@@ -175,11 +176,23 @@ bool ghFlashBin(const String& binUrl) {
       size_t rd = stream->readBytes(buf, min(avail, sizeof(buf)));
       Update.write(buf, rd);
       written += rd;
+      lastData = millis();
+    }
+    if (millis() - lastData > 15000) {
+      addLog("[GH-OTA] Download stalled, aborting.");
+      break;
     }
     yield();
   }
 
   http.end();
+
+  if (written < (size_t)contentLen) {
+    Update.abort();
+    addLog("[GH-OTA] Incomplete download (" + String(written) + "/" + String(contentLen) + ").");
+    oledDraw("GH-OTA", "DOWNLOAD FAIL", "");
+    return false;
+  }
 
   if (!Update.end(true)) {
     addLog("[GH-OTA] Finalize failed.");
@@ -194,6 +207,10 @@ bool ghFlashBin(const String& binUrl) {
 
 void checkGithubOta() {
   if (!staConnected) return;
+  if (ESP.getFreeHeap() < 80000) {
+    addLog("[GH-OTA] Low heap (" + String(ESP.getFreeHeap()/1024) + "KB), skipping.");
+    return;
+  }
 
   unsigned long otaStartTime = millis();
   const unsigned long OTA_TIMEOUT = 15000;  // 15 second total timeout

@@ -73,7 +73,7 @@ void setup() {
   if (oledFlipped) u8g2.setDisplayRotation(U8G2_R2);
   u8g2.setContrast(prefs.getInt("oled_bright", 255));
   drawSplashScreen();
-  delay(7000);
+  delay(2000);
 
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(apName.c_str(), apPass.c_str());
@@ -83,12 +83,12 @@ void setup() {
     oledDraw("CITADEL v2.0.0","CONNECTING STA","");
     WiFi.begin(staSSID.c_str(), staPass.c_str());
     int tries=0;
-    while (WiFi.status()!=WL_CONNECTED && tries<20) { delay(500); tries++; }
+    while (WiFi.status()!=WL_CONNECTED && tries<10) { delay(500); tries++; }
     staConnected=(WiFi.status()==WL_CONNECTED);
     if (staConnected) {
       addLog("[WIFI] STA connected: "+WiFi.localIP().toString());
       configTime(ntpOffset*3600,0,"pool.ntp.org");
-      delay(1500);
+      delay(500);
       ntpSynced=true;
     }
   }
@@ -300,7 +300,6 @@ void setup() {
 
   server.begin();
 
-  checkGithubOta();
   addLog("");
   addLog("CITADEL v2.1.0 BOOT OK");
   if (sysBanner!="") addLog(sysBanner);
@@ -317,6 +316,12 @@ void loop() {
   server.handleClient();
   ArduinoOTA.handle();
 
+  // Deferred GitHub OTA check — runs once after 15s of stable uptime
+  if (!ghOtaChecked && millis() - bootTime > 15000) {
+    ghOtaChecked = true;
+    checkGithubOta();
+  }
+
   // OTA auto-disable after 5 minutes
   if (otaEnabled && millis()-otaEnabledTime > 300000UL) {
     otaEnabled=false; addLog("[OTA] Auto-disabled.");
@@ -327,7 +332,7 @@ void loop() {
   if (wifiNow && !staConnected) {
     staConnected=true;
     addLog("[WIFI] STA connected: "+WiFi.localIP().toString());
-    if (!ntpSynced) { configTime(ntpOffset*3600,0,"pool.ntp.org"); delay(1500); ntpSynced=true; }
+    if (!ntpSynced) { configTime(ntpOffset*3600,0,"pool.ntp.org"); delay(500); ntpSynced=true; }
   } else if (!wifiNow && staConnected) {
     staConnected=false; addLog("[WIFI] STA disconnected.");
   }
